@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using System.Data.OleDb;
+using System.Data.SqlClient;
 
 namespace PTS.DataAccess
 {
@@ -30,7 +30,7 @@ namespace PTS.DataAccess
 
         public bool Save(bool isAdmissionPaid, bool isExamFeePaid, bool isTestFeePaid, bool isMockFeePaid)
         {
-            using (var conn = new OleDbConnection(Sniper.ConnString))
+            using (var conn = new SqlConnection(Sniper.ConnString))
             {
                 conn.Open();
 
@@ -38,7 +38,7 @@ namespace PTS.DataAccess
                 {
                     try
                     {
-                        using (var cmd = new OleDbCommand())
+                        using (var cmd = new SqlCommand())
                         {
                             cmd.Connection = conn;
                             cmd.Transaction = tran;
@@ -52,7 +52,7 @@ namespace PTS.DataAccess
                             cmd.Parameters.AddWithValue("@UserId", Sniper.UserId);
                             cmd.ExecuteNonQuery();
                         }
-                        using (var cmd = new OleDbCommand())
+                        using (var cmd = new SqlCommand())
                         {
                             cmd.Connection = conn;
                             cmd.Transaction = tran;
@@ -65,7 +65,7 @@ namespace PTS.DataAccess
 
                         if (isAdmissionPaid)
                         {
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -79,7 +79,7 @@ namespace PTS.DataAccess
                         // Exam Fee
                         if (isExamFeePaid)
                         {
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -91,7 +91,7 @@ namespace PTS.DataAccess
                                 cmd.Parameters.AddWithValue("@ExamFee", ExamFee);
                                 cmd.ExecuteNonQuery();
                             }
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -105,7 +105,7 @@ namespace PTS.DataAccess
                         // Test Fee
                         if (isTestFeePaid)
                         {
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -117,7 +117,7 @@ namespace PTS.DataAccess
                                 cmd.Parameters.AddWithValue("@TestFee", TestFee);
                                 cmd.ExecuteNonQuery();
                             }
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -131,7 +131,7 @@ namespace PTS.DataAccess
                         // Mock Fee
                         if (isMockFeePaid)
                         {
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -143,7 +143,7 @@ namespace PTS.DataAccess
                                 cmd.Parameters.AddWithValue("@MockFee", MockFee);
                                 cmd.ExecuteNonQuery();
                             }
-                            using (var cmd = new OleDbCommand())
+                            using (var cmd = new SqlCommand())
                             {
                                 cmd.Connection = conn;
                                 cmd.Transaction = tran;
@@ -170,10 +170,10 @@ namespace PTS.DataAccess
         {
             var dt = new DataTable();
 
-            using (var conn = new OleDbConnection(Sniper.ConnString))
+            using (var conn = new SqlConnection(Sniper.ConnString))
             {
                 conn.Open();
-                using (var cmd = new OleDbCommand("qry_Student_SearchForPayment", conn))
+                using (var cmd = new SqlCommand("qry_Student_SearchForPayment", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@StudId", studId);
@@ -181,7 +181,7 @@ namespace PTS.DataAccess
                 }
                 if (dt.Rows.Count == 0)
                 {
-                    using (var cmd = new OleDbCommand("qry_Student_SearchForPayment_Empty", conn))
+                    using (var cmd = new SqlCommand("qry_Student_SearchForPayment_Empty", conn))
                     {
                         dt.Clear();
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -196,10 +196,10 @@ namespace PTS.DataAccess
         public static DataTable GetPaymentHistory(string studId)
         {
             var dt = new DataTable();
-            using (var conn = new OleDbConnection(Sniper.ConnString))
+            using (var conn = new SqlConnection(Sniper.ConnString))
             {
                 conn.Open();
-                using (var cmd = new OleDbCommand(string.Format("SELECT * FROM Payment WHERE StudId={0}", studId), conn)
+                using (var cmd = new SqlCommand(string.Format("SELECT * FROM Payment WHERE StudId={0}", studId), conn)
                     )
                 {
                     dt.Load(cmd.ExecuteReader());
@@ -210,7 +210,7 @@ namespace PTS.DataAccess
 
         public static bool Delete(object id, string studId)
         {
-            using (var conn = new OleDbConnection(Sniper.ConnString))
+            using (var conn = new SqlConnection(Sniper.ConnString))
             {
                 conn.Open();
                 using (var tran = conn.BeginTransaction())
@@ -218,7 +218,7 @@ namespace PTS.DataAccess
                     try
                     {
                         var query = string.Format("DELETE FROM Payment WHERE Id={0}", id);
-                        using (var cmd = new OleDbCommand())
+                        using (var cmd = new SqlCommand())
                         {
                             cmd.Connection = conn;
                             cmd.Transaction = tran;
